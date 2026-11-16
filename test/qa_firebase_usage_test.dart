@@ -122,7 +122,14 @@ void main() {
         }
         return _json({
           'meta': {'name': 'متجر ألفا'},
-          'operations': {'op1': {'id': 'op1'}},
+          'catalog_digest': {
+            'counts': {'items': 307, 'accounts': 45, 'transactions': 120}
+          },
+          'operations': {
+            'op1': {'id': 'op1'},
+            'op2': {'id': 'op2'},
+            'op3': {'id': 'op3'},
+          },
           'snapshot': {'data': {'items': [{'id': 1, 'name': 'صنف'}]}},
         });
       }
