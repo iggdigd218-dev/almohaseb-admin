@@ -60,6 +60,7 @@ const Set<String> kOfficialAdminUids = <String>{
   'mTMmR6MDBMZH8nKEbvCntRemkq73',
   'WXUwZHEtp6VsNPaFRuUAD0RPp0U2',
   'pMg61gJrMWYf97kr3Q7qVGXLnK72',
+  'aLO3G0EZ7tP8ymfn0jEkd0dUIv43',
   'xmgIo7KmvwcZHD3MAbswG8QRq5V2',
 };
 
