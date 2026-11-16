@@ -1,9 +1,9 @@
 {
   "version": "1.8.13+63",
-  "sha256": "d4ed276de9119ef89013bd6e3df0214f81c7d73f0931d43318dccae961bd08d1",
+  "sha256": "1f9aaa1a21799fa71379d8eb709fb4307d7730c2ad17c390d61ce81ba206d523",
   "sha256Variants": {
-    "arm64": "d4ed276de9119ef89013bd6e3df0214f81c7d73f0931d43318dccae961bd08d1",
-    "armv7": "373beb676731a0b7130382ddddddb69d23fe8b8e529e9d3edd71f14726453b90"
+    "arm64": "1f9aaa1a21799fa71379d8eb709fb4307d7730c2ad17c390d61ce81ba206d523",
+    "armv7": "c5759170b50f0a2daffab9cbf327c0dfa16913ab7575f0f065e3bbc49f1635ec"
   },
   "releaseUrl": "https://github.com/iggdigd218-dev/almohaseb-admin/releases/tag/admin-latest",
   "downloads": {
@@ -20,6 +20,6 @@
       "armv7": "https://github.com/iggdigd218-dev/almohaseb-admin/releases/download/admin-latest/license-admin-armv7.apk"
     }
   },
-  "publishedAt": "2026-11-16T06:00:54Z",
+  "publishedAt": "2026-11-16T06:25:20Z",
   "notes": "• فصل تطبيق الإدارة في مستودع مستقل مع الحفاظ على بصمة التثبيت والتحديث المباشر.\n• إضافة لوحة مراقبة مساحة فيرباس (المستخدمة والمتبقية) وحجم النقل الشهري للمنشآت.\n• تحسين مسح المنشآت السحابي بأقل استهلاك للشبكة مع دعم الفحص الدقيق والمعايرة."
 }
