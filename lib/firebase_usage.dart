@@ -11,7 +11,6 @@ import 'dart:math' as math;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'license_model.dart';
 import 'rtdb.dart';
 
 const int kBytesPerKiB = 1024;
