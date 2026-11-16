@@ -84,6 +84,13 @@ jobs:
           ADMIN_SERVICE_PASSWORD: ${{ secrets.ADMIN_SERVICE_PASSWORD }}
         run: |
           EFF_ADMIN_TOKEN="${ADMIN_RTDB_REFRESH_TOKEN:-$ADMIN_REFRESH_TOKEN}"
+          if [ -z "$EFF_ADMIN_TOKEN" ] && [ -n "$ADMIN_SERVICE_EMAIL" ] && [ -n "$ADMIN_SERVICE_PASSWORD" ]; then
+            EFF_ADMIN_TOKEN=$(curl -s -X POST \
+              "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAh6_kGvoPvse3Mt3Yy06dmDaCpTKHp0F4" \
+              -H "Content-Type: application/json" \
+              -d "$(python3 -c "import json,os;print(json.dumps({'email':os.environ['ADMIN_SERVICE_EMAIL'],'password':os.environ['ADMIN_SERVICE_PASSWORD'],'returnSecureToken':True}))")" \
+              | python3 -c "import json,sys;print(json.load(sys.stdin).get('refreshToken',''))" 2>/dev/null || true)
+          fi
           flutter build apk --release \
             --split-per-abi \
             --target-platform android-arm,android-arm64 \
@@ -101,6 +108,8 @@ jobs:
         env:
           ADMIN_RTDB_REFRESH_TOKEN: ${{ secrets.ADMIN_RTDB_REFRESH_TOKEN }}
           ADMIN_REFRESH_TOKEN: ${{ secrets.ADMIN_REFRESH_TOKEN }}
+          ADMIN_SERVICE_EMAIL: ${{ secrets.ADMIN_SERVICE_EMAIL }}
+          ADMIN_SERVICE_PASSWORD: ${{ secrets.ADMIN_SERVICE_PASSWORD }}
         run: |
           VER=$(grep -E '^version:' pubspec.yaml | awk '{print $2}')
           NAME="${VER%%+*}"; BUILD="${VER##*+}"
@@ -144,16 +153,26 @@ jobs:
           fi
 
           ADMIN_TOKEN="${ADMIN_RTDB_REFRESH_TOKEN:-$ADMIN_REFRESH_TOKEN}"
-          if [ -z "$ADMIN_TOKEN" ]; then
-            echo "::warning::أسرار ADMIN_RTDB_REFRESH_TOKEN / ADMIN_REFRESH_TOKEN غير مضبوطة بعد في هذا المستودع — لم يتم تحديث بيان Firebase لتفادي كسر النسخ المثبّتة."
+          IDTOK=""
+          if [ -n "$ADMIN_TOKEN" ]; then
+            IDTOK=$(curl -s -X POST \
+              "https://securetoken.googleapis.com/v1/token?key=AIzaSyAh6_kGvoPvse3Mt3Yy06dmDaCpTKHp0F4" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              --data-urlencode "grant_type=refresh_token" \
+              --data-urlencode "refresh_token=$ADMIN_TOKEN" \
+              | python3 -c "import json,sys;print(json.load(sys.stdin).get('id_token',''))" 2>/dev/null || true)
+          fi
+          if [ -z "$IDTOK" ] && [ -n "$ADMIN_SERVICE_EMAIL" ] && [ -n "$ADMIN_SERVICE_PASSWORD" ]; then
+            IDTOK=$(curl -s -X POST \
+              "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAh6_kGvoPvse3Mt3Yy06dmDaCpTKHp0F4" \
+              -H "Content-Type: application/json" \
+              -d "$(python3 -c "import json,os;print(json.dumps({'email':os.environ['ADMIN_SERVICE_EMAIL'],'password':os.environ['ADMIN_SERVICE_PASSWORD'],'returnSecureToken':True}))")" \
+              | python3 -c "import json,sys;print(json.load(sys.stdin).get('idToken',''))" 2>/dev/null || true)
+          fi
+          if [ -z "$IDTOK" ]; then
+            echo "::warning::أسرار هوية المشرف غير مضبوطة بعد في هذا المستودع — أضف ADMIN_SERVICE_EMAIL و ADMIN_SERVICE_PASSWORD (أو ADMIN_RTDB_REFRESH_TOKEN)."
             exit 0
           fi
-          IDTOK=$(curl -s -X POST \
-            "https://securetoken.googleapis.com/v1/token?key=AIzaSyAh6_kGvoPvse3Mt3Yy06dmDaCpTKHp0F4" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            --data-urlencode "grant_type=refresh_token" \
-            --data-urlencode "refresh_token=$ADMIN_TOKEN" \
-            | python3 -c "import json,sys;print(json.load(sys.stdin).get('id_token',''))" 2>/dev/null || true)
           if [ -z "$IDTOK" ]; then
             echo "::warning::تعذّر تبادل ADMIN_RTDB_REFRESH_TOKEN إلى id_token — راجع صلاحية السر في إعدادات المستودع."
             exit 0
